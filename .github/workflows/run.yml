@@ -1,1 +1,29 @@
+name: Crypto Signal Bot
 
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # har 15 min run
+  workflow_dispatch:        # manual run button
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install library
+        run: pip install requests
+
+      - name: Run bot
+        run: python main.py
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
