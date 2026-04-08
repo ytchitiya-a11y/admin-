@@ -32,10 +32,31 @@ def get_candles(symbol, interval="15m", limit=100):
         r = requests.get(BASE_URL, params=params, timeout=10)
         data = r.json()
 
-        closes = [float(c[4]) for c in data]
-        highs  = [float(c[2]) for c in data]
-        lows   = [float(c[3]) for c in data]
-        volumes = [float(c[5]) for c in data]
+        if not isinstance(data, list):
+            print(f"API error {symbol}: {data}")
+            return None
+
+        if len(data) == 0:
+            print(f"No data {symbol}")
+            return None
+
+        closes = []
+        highs = []
+        lows = []
+        volumes = []
+
+        for c in data:
+            if len(c) < 6:
+                continue
+
+            closes.append(float(c[4]))
+            highs.append(float(c[2]))
+            lows.append(float(c[3]))
+            volumes.append(float(c[5]))
+
+        if len(closes) < 50:
+            print(f"Not enough data {symbol}")
+            return None
 
         return {
             "close": closes,
@@ -47,7 +68,6 @@ def get_candles(symbol, interval="15m", limit=100):
     except Exception as e:
         print(f"Error {symbol}: {e}")
         return None
-
 # ─────────────────────────────────────────────
 # INDICATORS
 # ─────────────────────────────────────────────
